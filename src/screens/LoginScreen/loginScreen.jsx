@@ -9,17 +9,25 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './loginScreenStyles';
+import {handleLogin} from '../../actions/login';
 
 const LoginScreen = ({setIsLoggedIn, navigation}) => {
-  const handleLogin = () => {
-    // Perform authentication (e.g., API call), then:
-    setIsLoggedIn(true); // This triggers the switch to MainStackRoute
-  };
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const handleLoginClick = async () => {
+    try {
+      const response = await handleLogin(email, password);
+      console.log('Login successful:', response);
+      setIsLoggedIn(true); // Update login state to true
+      // You can now navigate to the next screen after login
+    } catch (error) {
+      console.error('Login Error:', error);
+      // Handle error (e.g., show a message to the user)
+    }
+  };
 
   return (
     <View style={styles.safeareaView}>
@@ -75,7 +83,9 @@ const LoginScreen = ({setIsLoggedIn, navigation}) => {
           </TouchableOpacity>
 
           {/* Login Button */}
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={handleLoginClick}>
             <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>
 

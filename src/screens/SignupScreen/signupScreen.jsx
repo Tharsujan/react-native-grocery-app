@@ -8,8 +8,10 @@ import {
   Image,
   ImageBackground,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './signupScreenstyles';
+import {handleSignup} from '../../actions/register';
 
 const SignupScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
@@ -29,6 +31,28 @@ const SignupScreen = ({navigation}) => {
   const handleEmailChange = input => {
     setEmail(input);
     setIsEmailValid(validateEmail(input)); // set validity based on regex check
+  };
+  const handleSignUpClick = async () => {
+    try {
+      const response = await handleSignup(username, email, password);
+      //console.log('Signup successful:', response);
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Signup successful!',
+        text2: 'You can now log in.',
+      });
+      navigation.navigate('LoginScreen'); // Redirect to login screen after successful signup
+    } catch (error) {
+      console.error('Error during signup:', error);
+      // Handle error (e.g., show a message to the user)
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Signup failed',
+        text2: error.message || 'Please try again.',
+      });
+    }
   };
   return (
     <View style={styles.container}>
@@ -107,7 +131,9 @@ const SignupScreen = ({navigation}) => {
           </Text>
 
           {/* Signup Button */}
-          <TouchableOpacity style={styles.signupButton}>
+          <TouchableOpacity
+            style={styles.signupButton}
+            onPress={handleSignUpClick}>
             <Text style={styles.signupButtonText}>Sign Up</Text>
           </TouchableOpacity>
 
