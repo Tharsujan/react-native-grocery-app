@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -10,22 +10,45 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './loginScreenStyles';
 import {handleLogin} from '../../actions/login';
+import {AuthContext} from '../../utils/auth/auth';
+import moment from 'moment';
+import Toast from 'react-native-toast-message';
 
-const LoginScreen = ({setIsLoggedIn, navigation}) => {
+const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const {login} = useContext(AuthContext);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const handleLoginClick = async () => {
     try {
       const response = await handleLogin(email, password);
-      console.log('Login successful:', response);
-      setIsLoggedIn(true); // Update login state to true
-      // You can now navigate to the next screen after login
+      console.log('API Login successful:', response);
+
+      const isLoginSuccess = await login(response);
+
+      if (isLoginSuccess) {
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful!',
+          position: 'Bottom',
+        });
+
+        setTimeout(() => {
+          // navigation.navigate('Home'); // Replace 'Home' with your actual home screen name
+        }, 2000);
+      }
     } catch (error) {
       console.error('Login Error:', error);
-      // Handle error (e.g., show a message to the user)
+
+      // Show error toast with a message
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: error.message || 'An error occurred during login',
+        position: 'bottom',
+      });
     }
   };
 

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Text, Image, TouchableOpacity, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './accountScreenStyles';
+import {AuthContext} from '../../utils/auth/auth';
 
 const menuItems = [
   {title: 'Orders', icon: 'receipt-outline'},
@@ -15,6 +16,7 @@ const menuItems = [
 ];
 
 const AccountScreen = ({navigation}) => {
+  const {logout} = useContext(AuthContext);
   return (
     <ScrollView style={styles.container}>
       {/* Profile Header */}
@@ -51,9 +53,7 @@ const AccountScreen = ({navigation}) => {
       </View>
 
       {/* Logout Button */}
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={() => navigation.navigate('SplashScreen')}>
+      <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
         <Icon name="log-out-outline" size={24} style={styles.logoutIcon} />
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>

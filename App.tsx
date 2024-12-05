@@ -1,20 +1,14 @@
-// App.js
-import React, {useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import AuthStackRoute from './src/routes/authStackroute';
-import MainStackRoute from './src/routes/mainStackroute';
+import React from 'react';
+
+import Toast from 'react-native-toast-message';
+import Main from './src/routes';
+import AuthProvider from './src/utils/auth/auth';
 
 export default function App() {
-  // Temporary state for toggling between stacks
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   return (
-    <NavigationContainer>
-      {isLoggedIn ? (
-        <MainStackRoute />
-      ) : (
-        <AuthStackRoute setIsLoggedIn={setIsLoggedIn} />
-      )}
-    </NavigationContainer>
+    <AuthProvider>
+      <Main />
+      <Toast />
+    </AuthProvider>
   );
 }
