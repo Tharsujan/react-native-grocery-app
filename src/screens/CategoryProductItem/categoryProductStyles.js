@@ -29,5 +29,40 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     width: width * 0.4,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+  },
+
+  errorText: {
+    fontSize: 16,
+    color: '#FF4B4B',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+
+  retryButton: {
+    backgroundColor: '#53B175',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    elevation: 2,
+  },
+
+  retryText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 export default styles;

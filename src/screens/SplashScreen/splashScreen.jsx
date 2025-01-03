@@ -4,10 +4,11 @@ import styles from './splashScreenStyles';
 
 const SplashScreen = ({navigation}) => {
   useEffect(() => {
-    console.log('Navigation State:', navigation.getState());
-    setTimeout(() => {
-      navigation.navigate('WelcomeScreen'); // Replace with your intended screen
-    }, 3000); // Adjust the delay as needed
+    const timer = setTimeout(() => {
+      navigation.navigate('WelcomeScreen'); // Changed from replace to navigate
+    }, 3000);
+
+    return () => clearTimeout(timer); // Cleanup timer
   }, [navigation]);
 
   return (

@@ -14,7 +14,7 @@ const CategoryCard = ({title, imageSource, backgroundColor, borderColor}) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'red',
+    //backgroundColor: 'red',
     width: width * 0.4,
     height: 190,
     borderRadius: 15,
