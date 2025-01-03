@@ -11,7 +11,8 @@ import {
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './signupScreenstyles';
-import {handleSignup} from '../../actions/register';
+import {useRegisterMutation} from '../../seivices/api/authApi';
+// import {handleSignup} from '../../actions/register';
 
 const SignupScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
@@ -20,6 +21,7 @@ const SignupScreen = ({navigation}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(null);
 
+  const [register, {isLoading}] = useRegisterMutation();
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const validateEmail = email => {
@@ -33,24 +35,49 @@ const SignupScreen = ({navigation}) => {
     setIsEmailValid(validateEmail(input)); // set validity based on regex check
   };
   const handleSignUpClick = async () => {
+    if (!username || !email || !password) {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'All fields are required',
+        text2: 'Please fill in all fields.',
+      });
+      return;
+    }
+
+    if (!isEmailValid) {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Invalid email',
+        text2: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
     try {
-      const response = await handleSignup(username, email, password);
-      //console.log('Signup successful:', response);
+      const response = await register({
+        username,
+        email,
+        password,
+      }).unwrap();
+
       Toast.show({
         type: 'success',
         position: 'bottom',
         text1: 'Signup successful!',
         text2: 'You can now log in.',
       });
-      navigation.navigate('LoginScreen'); // Redirect to login screen after successful signup
+
+      navigation.navigate('LoginScreen');
     } catch (error) {
       console.error('Error during signup:', error);
-      // Handle error (e.g., show a message to the user)
+
       Toast.show({
         type: 'error',
         position: 'bottom',
         text1: 'Signup failed',
-        text2: error.message || 'Please try again.',
+        text2: error.data?.message || 'Please try again.',
       });
     }
   };

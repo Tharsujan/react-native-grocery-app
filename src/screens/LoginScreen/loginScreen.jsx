@@ -9,9 +9,12 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './loginScreenStyles';
-import {handleLogin} from '../../actions/login';
+// import {handleLogin} from '../../actions/login';
 import {AuthContext} from '../../utils/auth/auth';
-import moment from 'moment';
+// import moment from 'moment';
+import {useLoginMutation} from '../../seivices/api/authApi';
+import {useDispatch} from 'react-redux';
+import {setCredentials} from '../../redux/slices/authSlice';
 import Toast from 'react-native-toast-message';
 
 const LoginScreen = ({navigation}) => {
@@ -19,34 +22,45 @@ const LoginScreen = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const {login} = useContext(AuthContext);
+  const [loginMutation, {isLoading}] = useLoginMutation();
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
   const handleLoginClick = async () => {
     try {
-      const response = await handleLogin(email, password);
+      // First, call RTK Query login mutation
+      const response = await loginMutation({
+        email,
+        password,
+      }).unwrap();
+
       console.log('API Login successful:', response);
 
-      const isLoginSuccess = await login(response);
+      // Store in Redux
+      dispatch(setCredentials(response));
 
-      if (isLoginSuccess) {
+      // Then use AuthContext login to handle token storage
+      const loginSuccess = await login(response);
+
+      if (loginSuccess) {
         Toast.show({
           type: 'success',
           text1: 'Login Successful!',
-          position: 'Bottom',
+          position: 'bottom',
         });
 
         setTimeout(() => {
-          // navigation.navigate('Home'); // Replace 'Home' with your actual home screen name
+          //navigation.navigate('Home');
         }, 2000);
       }
     } catch (error) {
       console.error('Login Error:', error);
 
-      // Show error toast with a message
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
-        text2: error.message || 'An error occurred during login',
+        text2: error.data?.message || 'An error occurred during login',
         position: 'bottom',
       });
     }

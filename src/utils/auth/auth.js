@@ -2,9 +2,6 @@ import {createContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import moment from 'moment';
-import {refreshToken as refreshTokenAPI} from '../../actions/login';
-
-const Token = 'Token';
 
 export const AuthContext = createContext();
 
@@ -19,8 +16,6 @@ const AuthProvider = ({children}) => {
 
       if (token && expTime && moment(expTime).isAfter(moment())) {
         setIsLoggedIn(true);
-      } else if (token) {
-        await refreshStorage(token); // Call refreshStorage if token exists but expired
       } else {
         logout();
       }
@@ -37,14 +32,23 @@ const AuthProvider = ({children}) => {
   const login = async data => {
     console.log('login');
     try {
-      const time = moment().add(7, 'hours').format('YYYY-MM-DD HH:mm:ss');
-      const token = data.Token;
+      // Set token expiration time to 1 hour from now
+      const time = moment().add(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
+
+      // Store the token from the RTK Query response
+      const token = data.token;
+
+      // Save token and its expiration time
       await EncryptedStorage.setItem('Token', token);
       await EncryptedStorage.setItem('TokenExpTime', time);
-      await EncryptedStorage.setItem('RefreshToken', data.RefreshToken);
-      await EncryptedStorage.setItem('RFTokenExpDate', data.RFTokenExpDate);
-      await AsyncStorage.setItem('Name', data.username);
+
+      // Store user data if needed
+      if (data.email) {
+        await AsyncStorage.setItem('Email', data.email);
+      }
+
       setIsLoggedIn(true);
+      return true; // Login successful
     } catch (error) {
       console.error('Error during login:', error);
       return false; // Login failed
@@ -53,47 +57,13 @@ const AuthProvider = ({children}) => {
 
   const logout = async () => {
     try {
+      // Remove all auth-related items from storage
       await EncryptedStorage.removeItem('Token');
       await EncryptedStorage.removeItem('TokenExpTime');
-      await EncryptedStorage.removeItem('RefreshToken');
-      await EncryptedStorage.removeItem('RFTokenExpDate');
       await AsyncStorage.clear();
       setIsLoggedIn(false);
     } catch (error) {
       console.error('Error during signout:', error);
-    }
-  };
-
-  const refreshStorage = async token => {
-    console.log('refresh called');
-    try {
-      const refreshToken = await EncryptedStorage.getItem('RefreshToken');
-      const RFTokenExpDate = await EncryptedStorage.getItem('RFTokenExpDate');
-
-      if (
-        refreshToken &&
-        RFTokenExpDate &&
-        moment(RFTokenExpDate).isAfter(moment())
-      ) {
-        const newTokens = await refreshTokenAPI(refreshToken); // Use refreshToken function from API
-        console.log('New tokens received:', newTokens);
-
-        // Update storage with new tokens
-        await EncryptedStorage.setItem('Token', newTokens.accessToken);
-        const newExpTime = moment()
-          .add(7, 'hours')
-          .format('YYYY-MM-DD HH:mm:ss');
-        await EncryptedStorage.setItem('TokenExpTime', newExpTime);
-        await EncryptedStorage.setItem('RefreshToken', newTokens.refreshToken);
-
-        setIsLoggedIn(true);
-        return newTokens.accessToken;
-      } else {
-        logout();
-      }
-    } catch (error) {
-      console.error('Error during token refresh:', error);
-      logout();
     }
   };
 
@@ -104,25 +74,31 @@ const AuthProvider = ({children}) => {
 
       if (token && expTime && moment(expTime).isAfter(moment())) {
         return token;
-      } else if (token) {
-        return await refreshStorage(token);
       } else {
         logout();
+        return null;
       }
     } catch (error) {
       console.error('Error fetching token:', error);
       logout();
+      return null;
     }
   };
 
-  const getUserName = async () => {
-    const Name = await AsyncStorage.getItem('Name');
-    return Name;
+  const getUserEmail = async () => {
+    const email = await AsyncStorage.getItem('Email');
+    return email;
   };
 
   return (
     <AuthContext.Provider
-      value={{isLoggedIn, login, logout, getToken, getUserName}}>
+      value={{
+        isLoggedIn,
+        login,
+        logout,
+        getToken,
+        getUserEmail,
+      }}>
       {children}
     </AuthContext.Provider>
   );

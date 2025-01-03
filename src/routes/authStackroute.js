@@ -10,7 +10,9 @@ const AuthStack = createStackNavigator();
 
 export default function AuthStackRoute({setIsLoggedIn}) {
   return (
-    <AuthStack.Navigator screenOptions={{headerShown: false}}>
+    <AuthStack.Navigator
+      initialRouteName="SplashScreen"
+      screenOptions={{headerShown: false}}>
       <AuthStack.Screen name="SplashScreen" component={SplashScreen} />
       <AuthStack.Screen name="WelcomeScreen" component={WelcomeScreen} />
       <AuthStack.Screen
