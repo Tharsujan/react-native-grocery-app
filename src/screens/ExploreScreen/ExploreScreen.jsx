@@ -14,46 +14,6 @@ import {useNavigation} from '@react-navigation/native';
 import CategoryCard from '../../components/categoryCard';
 import styles from './exploreScreenStyles';
 import {useGetAllCategoriesQuery} from '../../seivices/api/categoryApi';
-// const categories = [
-//   {
-//     title: 'Fresh Fruits & Vegetables',
-//     imageSource: require('../../assests/fruits.png'),
-//     backgroundColor: '#F0FFF4',
-//     borderColor: '#53B175',
-//   },
-//   {
-//     title: 'Cooking Oil & Ghee',
-//     imageSource: require('../../assests/oil.png'),
-//     backgroundColor: '#FFF7E6',
-//     borderColor: '#FFCC80',
-//   },
-//   {
-//     title: 'Meat & Fish',
-//     imageSource: require('../../assests/meat.png'),
-//     backgroundColor: '#FFEFEF',
-//     borderColor: '#FFA726',
-//   },
-//   {
-//     title: 'Bakery & Snacks',
-//     imageSource: require('../../assests/bakery.png'),
-//     backgroundColor: '#F7E6FF',
-//     borderColor: '#CE93D8',
-//   },
-//   {
-//     title: 'Dairy & Eggs',
-//     imageSource: require('../../assests/dairy.png'),
-//     backgroundColor: '#FFF9E6',
-//     borderColor: '#FFD54F',
-//   },
-//   {
-//     title: 'Beverages',
-//     imageSource: require('../../assests/beverages.png'),
-//     backgroundColor: '#E6F7FF',
-//     borderColor: '#81D4FA',
-//   },
-
-//   // Add more categories if needed
-// ];
 
 const ExploreScreen = () => {
   const navigation = useNavigation();
@@ -78,11 +38,8 @@ const ExploreScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error loading categories</Text>
-        <TouchableOpacity onPress={refetch} style={styles.retryButton}>
-          <Text style={styles.retryText}>Retry</Text>
-        </TouchableOpacity>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#53B175" />
       </View>
     );
   }

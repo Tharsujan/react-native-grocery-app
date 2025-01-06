@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, Image, TouchableOpacity, StatusBar} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -6,17 +6,31 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './productDetailScreenstyles';
 
 const ProductDetailScreen = ({route, navigation}) => {
-  const {product} = route.params;
+  const {product} = route.params || {};
+
+  useEffect(() => {
+    // Validate required product data
+    if (!product || !product.name || !product.price || !product.image) {
+      console.error('Invalid product data:', product);
+      navigation.goBack();
+      return;
+    }
+  }, [product]);
+
   const [quantity, setQuantity] = useState(1);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  if (!product) {
+    return null;
+  }
+
   const toggleDetailVisibility = () => {
     setIsDetailVisible(!isDetailVisible);
   };
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
-  const numericPrice = parseFloat(product.price.replace('$', ''));
+  const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
 
   // Increase quantity
   const incrementQuantity = () => setQuantity(quantity + 1);
@@ -42,7 +56,15 @@ const ProductDetailScreen = ({route, navigation}) => {
         </View>
 
         {/* Product Image */}
-        <Image source={{uri: product.image}} style={styles.productImage} />
+        {product.image ? (
+          <Image
+            source={{uri: product.image}}
+            style={styles.productImage}
+            defaultSource={require('../../assests/bakery.png')} // Add a placeholder image
+          />
+        ) : (
+          <View style={[styles.productImage, styles.placeholderImage]} />
+        )}
       </View>
       {/* Product Info */}
       <View style={styles.productInfoContainer}>

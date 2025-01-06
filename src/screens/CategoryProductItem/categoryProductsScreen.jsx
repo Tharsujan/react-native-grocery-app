@@ -10,37 +10,12 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import styles from './categoryProductStyles';
-import ProductItem from '../../components/productItem'; // Adjust the path as needed
+import ProductItem from '../../components/productItem';
 import {useGetCategoryProductsQuery} from '../../seivices/api/productApi';
 
 const CategoryProductsScreen = ({route, navigation}) => {
   const {category} = route.params;
 
-  // Example product data
-  // const products = [
-  //   {
-  //     id: '1',
-  //     name: 'Diet Coke',
-  //     productQuantity: '330ml',
-  //     price: '$1.99',
-  //     image: 'https://example.com/diet_coke.png',
-  //   },
-  //   {
-  //     id: '2',
-  //     name: 'Sprite Can',
-  //     productQuantity: '330ml',
-  //     price: '$1.50',
-  //     image: 'https://example.com/sprite.png',
-  //   },
-  //   {
-  //     id: '3',
-  //     name: 'Sprite Can',
-  //     productQuantity: '330ml',
-  //     price: '$1.50',
-  //     image: 'https://example.com/sprite.png',
-  //   },
-  //   // Add more product items as needed
-  // ];
   const {
     data: products,
     isLoading,
@@ -50,6 +25,27 @@ const CategoryProductsScreen = ({route, navigation}) => {
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
+  const handleProductPress = item => {
+    // Make sure all required properties are properly formatted
+    const productData = {
+      id: item.id,
+      name: item.name,
+      price: item.price.toString().startsWith('$')
+        ? item.price
+        : `$${item.price}`,
+      productQuantity: item.quantity || '1 kg', // Provide default if missing
+      image: item.imageUrl?.startsWith('http')
+        ? item.imageUrl
+        : `http://192.168.1.27:7193${item.imageUrl}`,
+    };
+
+    // Log the data being passed (for debugging)
+    console.log('Navigating to ProductDetailScreen with:', productData);
+
+    navigation.navigate('ProductDetailScreen', {
+      product: productData,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -88,13 +84,15 @@ const CategoryProductsScreen = ({route, navigation}) => {
         data={products}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
-          <ProductItem
-            name={item.name}
-            productQuantity={item.quantity}
-            price={item.price}
-            image={{uri: `http://192.168.1.27:7193${item.imageUrl}`}}
-            style={styles.customProductItem}
-          />
+          <TouchableOpacity onPress={() => handleProductPress(item)}>
+            <ProductItem
+              name={item.name}
+              productQuantity={item.quantity}
+              price={item.price}
+              image={{uri: `http://192.168.1.27:7193${item.imageUrl}`}}
+              style={styles.customProductItem}
+            />
+          </TouchableOpacity>
         )}
         numColumns={2}
         contentContainerStyle={styles.productGrid}
