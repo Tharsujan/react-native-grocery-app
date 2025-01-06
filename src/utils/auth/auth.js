@@ -17,11 +17,11 @@ const AuthProvider = ({children}) => {
       if (token && expTime && moment(expTime).isAfter(moment())) {
         setIsLoggedIn(true);
       } else {
-        logout();
+        await logout();
       }
     } catch (error) {
       console.error('Error fetching data from AsyncStorage:', error);
-      logout();
+      await logout();
     }
   };
 
@@ -30,7 +30,7 @@ const AuthProvider = ({children}) => {
   }, []);
 
   const login = async data => {
-    console.log('login');
+    console.log('login called with data:', data);
     try {
       // Set token expiration time to 1 hour from now
       const time = moment().add(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
@@ -43,30 +43,27 @@ const AuthProvider = ({children}) => {
       await EncryptedStorage.setItem('TokenExpTime', time);
 
       // Store user data if needed
-      if (data.email) {
-        await AsyncStorage.setItem('Email', data.email);
+      if (data.user) {
+        await AsyncStorage.setItem('UserData', JSON.stringify(data.user));
       }
 
       setIsLoggedIn(true);
-      return true; // Login successful
+      return true;
     } catch (error) {
       console.error('Error during login:', error);
-      return false; // Login failed
+      return false;
     }
   };
-
   const logout = async () => {
     try {
-      // Remove all auth-related items from storage
-      await EncryptedStorage.removeItem('Token');
-      await EncryptedStorage.removeItem('TokenExpTime');
+      // Clear all storage
+      await EncryptedStorage.clear();
       await AsyncStorage.clear();
       setIsLoggedIn(false);
     } catch (error) {
-      console.error('Error during signout:', error);
+      console.error('Error during logout:', error);
     }
   };
-
   const getToken = async () => {
     try {
       const token = await EncryptedStorage.getItem('Token');
@@ -75,21 +72,15 @@ const AuthProvider = ({children}) => {
       if (token && expTime && moment(expTime).isAfter(moment())) {
         return token;
       } else {
-        logout();
+        await logout();
         return null;
       }
     } catch (error) {
       console.error('Error fetching token:', error);
-      logout();
+      await logout();
       return null;
     }
   };
-
-  const getUserEmail = async () => {
-    const email = await AsyncStorage.getItem('Email');
-    return email;
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -97,7 +88,6 @@ const AuthProvider = ({children}) => {
         login,
         logout,
         getToken,
-        getUserEmail,
       }}>
       {children}
     </AuthContext.Provider>

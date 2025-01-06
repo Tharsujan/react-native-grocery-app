@@ -1,8 +1,16 @@
-import React, {useContext} from 'react';
-import {View, Text, Image, TouchableOpacity, ScrollView} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './accountScreenStyles';
 import {AuthContext} from '../../utils/auth/auth';
+import {useGetProfileQuery} from '../../seivices/api/authApi';
 
 const menuItems = [
   {title: 'Orders', icon: 'receipt-outline'},
@@ -17,22 +25,100 @@ const menuItems = [
 
 const AccountScreen = ({navigation}) => {
   const {logout} = useContext(AuthContext);
+  const [imageError, setImageError] = useState(false);
+  const {
+    data: profile,
+    isLoading,
+    error,
+    refetch,
+  } = useGetProfileQuery(undefined, {refetchOnMountOrArgChange: true});
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      refetch();
+      setImageError(false); // Reset image error state when screen is focused
+    });
+
+    return unsubscribe;
+  }, [navigation, refetch]);
+
+  // Function to fix the URL by removing duplicate 'uploads' folder
+  const getFixedImageUrl = url => {
+    if (!url) return null;
+    // Remove duplicate 'uploads' in the path if it exists
+    return url.replace('/uploads/uploads/', '/uploads/');
+  };
+
+  // Function to get profile image source
+  const getProfileImageSource = () => {
+    if (imageError || !profile?.profilePictureUrl) {
+      return require('../../assests/profile.png');
+    }
+
+    const fixedUrl = getFixedImageUrl(profile.profilePictureUrl);
+    console.log('Fixed profile image URL:', fixedUrl);
+
+    return {
+      uri: fixedUrl,
+      // Add cache control headers
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+      },
+    };
+  };
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  if (isLoading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          {justifyContent: 'center', alignItems: 'center'},
+        ]}>
+        <ActivityIndicator size="large" color="#28a745" />
+      </View>
+    );
+  }
+  if (error) {
+    console.log('Error details:', error);
+    return (
+      <View
+        style={[
+          styles.container,
+          {justifyContent: 'center', alignItems: 'center'},
+        ]}>
+        <Text style={{color: 'red'}}>
+          Failed to load profile. Please try again.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
       {/* Profile Header */}
       <View style={styles.profileContainer}>
         <Image
-          source={require('../../assests/profile.png')}
+          source={getProfileImageSource()}
           style={styles.profileImage}
+          // Add default image handling
+          onError={error => {
+            console.log('Image loading error:', error);
+          }}
         />
         <View style={styles.profileInfo}>
           <View style={styles.profileEdit}>
-            <Text style={styles.profileName}>Afsar Hossen</Text>
+            <Text style={styles.profileName}>
+              {profile?.username || 'User'}
+            </Text>
             <TouchableOpacity style={styles.editIcon}>
               <Icon name="pencil-outline" size={20} color="#28a745" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileEmail}>lmshuvo97@gmail.com</Text>
+          <Text style={styles.profileEmail}>{profile?.email || ''}</Text>
         </View>
       </View>
 
@@ -53,7 +139,7 @@ const AccountScreen = ({navigation}) => {
       </View>
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Icon name="log-out-outline" size={24} style={styles.logoutIcon} />
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
