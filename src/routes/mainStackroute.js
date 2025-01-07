@@ -4,6 +4,7 @@ import BottomNavbar from '../components/bottomNavBar';
 import ProductDetailScreen from '../screens/ProductDetailScreen/productDetailScreen'; // Import ProductDetailScreen
 import CategoryProductsScreen from '../screens/CategoryProductItem/categoryProductsScreen';
 import OrderAcceptedScreen from '../screens/orderAcceptedScreen/orderAcceptedScreen';
+import editProfileScreen from '../screens/editProfileScreen/editProfileScreen';
 
 const MainStack = createStackNavigator();
 
@@ -22,6 +23,10 @@ export default function MainStackRoute() {
       <MainStack.Screen
         name="OrderAcceptedScreen"
         component={OrderAcceptedScreen}
+      />
+      <MainStack.Screen
+        name="editProfileScreen"
+        component={editProfileScreen}
       />
     </MainStack.Navigator>
   );

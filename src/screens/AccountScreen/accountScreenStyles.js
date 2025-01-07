@@ -13,10 +13,37 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E2E2E2',
   },
+  ImageaddContainer: {
+    //backgroundColor: 'red',
+  },
   profileImage: {
     width: 60,
     height: 60,
     borderRadius: 30,
+  },
+  profileImageContainer: {
+    position: 'relative',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'visible',
+  },
+
+  uploadIconContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    //backgroundColor: 'red',
+    borderRadius: 12,
+    padding: 4,
+    //elevation: 2,
+    // //shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
   },
   profileInfo: {
     flex: 1,
