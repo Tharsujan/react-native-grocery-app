@@ -56,5 +56,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'Gilroy',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
 });
 export default styles;

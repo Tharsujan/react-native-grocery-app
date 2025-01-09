@@ -2,12 +2,29 @@ import React from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
+const BASE_URL = 'http://192.168.1.27:7193';
 
 const CartProductItem = ({item, onIncrease, onDecrease, onRemove}) => {
+  const getFullImageUrl = imageUrl => {
+    if (!imageUrl) return null;
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `${BASE_URL}${imageUrl}`;
+  };
   const totalPrice = (item.price * item.quantity).toFixed(2);
   return (
     <View style={styles.container}>
-      <Image source={item.image} style={styles.image} />
+      <Image
+        source={{
+          uri: getFullImageUrl(item.imageUrl),
+          headers: {
+            // Add any headers needed for image loading
+            Accept: 'image/jpeg',
+            'Cache-Control': 'no-cache',
+          },
+        }}
+        //defaultSource={require('../../assests/placeholder.png')}
+        style={styles.image}
+      />
       <View style={styles.details}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.size}>{item.size}</Text>

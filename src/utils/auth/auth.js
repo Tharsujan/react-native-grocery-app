@@ -9,7 +9,7 @@ const AuthProvider = ({children}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const checkLogin = async () => {
-    console.log('checkLogin called');
+    //console.log('checkLogin called');
     try {
       const token = await EncryptedStorage.getItem('Token');
       const expTime = await EncryptedStorage.getItem('TokenExpTime');
@@ -30,7 +30,7 @@ const AuthProvider = ({children}) => {
   }, []);
 
   const login = async data => {
-    console.log('login called with data:', data);
+    //console.log('login called with data:', data);
     try {
       // Set token expiration time to 1 hour from now
       const time = moment().add(1, 'hours').format('YYYY-MM-DD HH:mm:ss');

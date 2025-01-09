@@ -9,7 +9,7 @@ export const authApi = createApi({
     prepareHeaders: async (headers, {getState}) => {
       try {
         const token = await EncryptedStorage.getItem('Token');
-        console.log('Token from EncryptedStorage:', token);
+        //console.log('Token from EncryptedStorage:', token);
 
         if (token) {
           headers.set('Authorization', `Bearer ${token}`);
@@ -57,7 +57,7 @@ export const authApi = createApi({
         method: 'GET',
       }),
       transformResponse: response => {
-        console.log('Raw profile response:', response);
+        //console.log('Raw profile response:', response);
         return response;
       },
       providesTags: ['Profile'],

@@ -41,7 +41,7 @@ const CategoryProductsScreen = ({route, navigation}) => {
     };
 
     // Log the data being passed (for debugging)
-    console.log('Navigating to ProductDetailScreen with:', productData);
+    // console.log('Navigating to ProductDetailScreen with:', productData);
 
     navigation.navigate('ProductDetailScreen', {
       product: productData,

@@ -16,6 +16,7 @@ import {
   useCheckFavoriteQuery,
   useRemoveFromFavoritesMutation,
 } from '../../seivices/api/favoriteApi';
+import {useAddToCartMutation} from '../../seivices/api/cartApi';
 
 const ProductDetailScreen = ({route, navigation}) => {
   const {product} = route.params || {};
@@ -37,6 +38,7 @@ const ProductDetailScreen = ({route, navigation}) => {
   const [addToFavorites, {isLoading: isAdding}] = useAddToFavoritesMutation();
   const [removeFromFavorites, {isLoading: isRemoving}] =
     useRemoveFromFavoritesMutation();
+  const [addToCart, {isLoading: isAddingToCart}] = useAddToCartMutation();
 
   //const [isFavorite, setIsFavorite] = useState(false);
   const isFavorite = favoriteStatus?.isFavorite;
@@ -69,6 +71,29 @@ const ProductDetailScreen = ({route, navigation}) => {
   // Decrease quantity (minimum is 1)
   const decrementQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1);
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      await addToCart({
+        productId: product.id,
+        quantity: quantity,
+      }).unwrap();
+      Alert.alert('Success', 'Product added to cart successfully', [
+        {
+          text: 'Continue Shopping',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Go to Cart',
+          onPress: () =>
+            navigation.navigate('BottomNavbar', {screen: 'CartScreen'}),
+        },
+      ]);
+    } catch (error) {
+      Alert.alert('Error', error.data?.message || 'Failed to add item to cart');
+    }
   };
 
   return (
@@ -171,9 +196,13 @@ const ProductDetailScreen = ({route, navigation}) => {
         </View>
         <Icon name="chevron-forward" size={20} color="#181725" />
       </TouchableOpacity>
-      {/* Add to Basket Button */}
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add To Basket</Text>
+      <TouchableOpacity
+        style={[styles.addButton, isAddingToCart && styles.addButtonDisabled]}
+        onPress={handleAddToCart}
+        disabled={isAddingToCart}>
+        <Text style={styles.addButtonText}>
+          {isAddingToCart ? 'Adding...' : 'Add To Basket'}
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

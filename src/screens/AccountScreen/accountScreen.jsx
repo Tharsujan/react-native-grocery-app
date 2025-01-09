@@ -61,7 +61,7 @@ const AccountScreen = ({navigation}) => {
     }
 
     const fixedUrl = getFixedImageUrl(profile.profilePictureUrl);
-    console.log('Fixed profile image URL:', fixedUrl);
+    //console.log('Fixed profile image URL:', fixedUrl);
 
     return {
       uri: fixedUrl,
@@ -98,10 +98,10 @@ const AccountScreen = ({navigation}) => {
 
         const formData = new FormData();
         formData.append('file', imageFile);
-        console.log('Uploading file:', imageFile);
+        // console.log('Uploading file:', imageFile);
         try {
           const response = await uploadProfilePicture(formData).unwrap();
-          console.log('Upload response:', response); // Add logging
+          // console.log('Upload response:', response); // Add logging
           refetch();
         } catch (error) {
           console.error('Upload Error:', error);
@@ -129,7 +129,7 @@ const AccountScreen = ({navigation}) => {
     );
   }
   if (error) {
-    console.log('Error details:', error);
+    // console.log('Error details:', error);
     return (
       <View
         style={[

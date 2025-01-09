@@ -12,7 +12,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useRemoveFromFavoritesMutation} from '../seivices/api/favoriteApi';
 const BASE_URL = 'http://192.168.1.27:7193';
 
-const FavoriteItem = ({item, onRemove}) => {
+const FavoriteItem = ({item, onRemove, onShowModal}) => {
   const [removeFromFavorites, {isLoading}] = useRemoveFromFavoritesMutation();
   // Construct the full image URL
   const getFullImageUrl = imageUrl => {
@@ -23,7 +23,7 @@ const FavoriteItem = ({item, onRemove}) => {
   const handleRemove = async () => {
     try {
       await removeFromFavorites(item.id).unwrap();
-      Alert.alert('Success', 'Item removed from favorites');
+      Alert.alert('Success', `${item.name} removed from favorites`);
       if (onRemove) {
         onRemove(item.id);
       }
@@ -89,8 +89,9 @@ const FavoriteItem = ({item, onRemove}) => {
             style={[styles.removeButton, isLoading && styles.disabledButton]}>
             <MaterialIcons name="delete-outline" size={24} color="#FF4B4B" />
           </TouchableOpacity>
-
-          <Icon name="chevron-forward-outline" size={20} color="#181725" />
+          <TouchableOpacity onPress={onShowModal}>
+            <Icon name="add" size={20} color="#181725" />
+          </TouchableOpacity>
         </View>
       </View>
     </View>
