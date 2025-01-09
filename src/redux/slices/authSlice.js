@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
-
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {resetApiState} from '../store';
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -15,14 +16,32 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = payload.user; // Save user details
     },
-    logout: state => {
+    clearCredentials: state => {
       state.token = null;
       state.message = null;
       state.isAuthenticated = false;
-      state.user = null; // Clear user details
+      state.user = null;
     },
   },
 });
 
-export const {setCredentials, logout} = authSlice.actions;
+export const {setCredentials, clearCredentials} = authSlice.actions;
+export const logout = () => async dispatch => {
+  try {
+    // Clear encrypted storage
+    await EncryptedStorage.removeItem('userToken');
+    await EncryptedStorage.removeItem('Token'); // Also clear the 'Token' key
+    await EncryptedStorage.removeItem('user');
+
+    // Clear Redux state
+    dispatch(clearCredentials());
+
+    // Reset all API caches
+    resetApiState();
+    console.log('Logout completed successfully');
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
+
 export default authSlice.reducer;

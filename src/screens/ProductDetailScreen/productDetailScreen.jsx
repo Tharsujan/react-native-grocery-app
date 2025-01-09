@@ -1,9 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, TouchableOpacity, StatusBar} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+  Alert,
+} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './productDetailScreenstyles';
+import {
+  useAddToFavoritesMutation,
+  useCheckFavoriteQuery,
+  useRemoveFromFavoritesMutation,
+} from '../../seivices/api/favoriteApi';
 
 const ProductDetailScreen = ({route, navigation}) => {
   const {product} = route.params || {};
@@ -19,7 +31,16 @@ const ProductDetailScreen = ({route, navigation}) => {
 
   const [quantity, setQuantity] = useState(1);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+
+  const {data: favoriteStatus, isLoading: checkingFavorite} =
+    useCheckFavoriteQuery(product?.id);
+  const [addToFavorites, {isLoading: isAdding}] = useAddToFavoritesMutation();
+  const [removeFromFavorites, {isLoading: isRemoving}] =
+    useRemoveFromFavoritesMutation();
+
+  //const [isFavorite, setIsFavorite] = useState(false);
+  const isFavorite = favoriteStatus?.isFavorite;
+  const isLoading = checkingFavorite || isAdding || isRemoving;
   if (!product) {
     return null;
   }
@@ -27,8 +48,18 @@ const ProductDetailScreen = ({route, navigation}) => {
   const toggleDetailVisibility = () => {
     setIsDetailVisible(!isDetailVisible);
   };
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  const toggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(product.id).unwrap();
+        //Alert.alert('Success', 'Removed from favorites');
+      } else {
+        await addToFavorites(product.id).unwrap();
+        // Alert.alert('Success', 'Added to favorites');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.data?.message || 'Failed to update favorites');
+    }
   };
   const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
 
@@ -70,7 +101,13 @@ const ProductDetailScreen = ({route, navigation}) => {
       <View style={styles.productInfoContainer}>
         <View style={styles.productFavourite}>
           <Text style={styles.productName}>{product.name}</Text>
-          <TouchableOpacity onPress={toggleFavorite}>
+          <TouchableOpacity
+            onPress={toggleFavorite}
+            disabled={isLoading}
+            style={[
+              styles.favoriteButton,
+              isLoading && styles.favoriteButtonDisabled,
+            ]}>
             <MaterialIcons
               name={isFavorite ? 'favorite' : 'favorite-border'} // Change icon based on favorite state
               size={24}
@@ -113,14 +150,14 @@ const ProductDetailScreen = ({route, navigation}) => {
         </TouchableOpacity>
         {isDetailVisible && (
           <Text style={styles.productDetailText}>
-            kbdbkshjbhjfbhb snzzbkjdbn kbdskb sndnkcbj
+            {product.description || 'No details available'}
           </Text>
         )}
       </View>
       {/* Nutrition and Review */}
       <TouchableOpacity style={styles.sectionRow}>
         <Text style={styles.sectionTitle}>Nutritions</Text>
-        <Text style={styles.nutritionWeight}>100gr</Text>
+        <Text style={styles.nutritionWeight}>{product.nutrition || 'N/A'}</Text>
         <Icon name="chevron-forward" size={20} color="#181725" />
       </TouchableOpacity>
       <TouchableOpacity style={[styles.sectionRow, styles.reviewSection]}>

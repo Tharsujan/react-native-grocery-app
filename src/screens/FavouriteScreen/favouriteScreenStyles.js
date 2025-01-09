@@ -4,6 +4,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF',
   },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
     fontSize: 20,
     fontWeight: '700',
@@ -37,6 +41,33 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#7C7C7C',
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF4B4B',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#53B175',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
 export default styles;

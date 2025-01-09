@@ -1,4 +1,3 @@
-// CategoryDetailScreen.js
 import React from 'react';
 import {
   View,
@@ -37,6 +36,8 @@ const CategoryProductsScreen = ({route, navigation}) => {
       image: item.imageUrl?.startsWith('http')
         ? item.imageUrl
         : `http://192.168.1.27:7193${item.imageUrl}`,
+      description: item.description, // Include description
+      nutrition: item.nutritionInfo, // Include nutrition
     };
 
     // Log the data being passed (for debugging)
