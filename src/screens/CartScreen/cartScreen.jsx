@@ -136,19 +136,25 @@ const CartScreen = ({navigation}) => {
       <Text style={styles.header}>My Cart</Text>
       <View style={styles.headerBorder} />
       <View style={styles.listContainer}>
-        <FlatList
-          data={cartItems}
-          renderItem={({item}) => (
-            <CartProductItem
-              item={item}
-              onIncrease={() => handleIncrease(item.id, item.quantity)}
-              onDecrease={() => handleDecrease(item.id, item.quantity)}
-              onRemove={() => handleRemove(item.id)}
-            />
-          )}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={styles.list}
-        />
+        {cartItems?.length > 0 ? (
+          <FlatList
+            data={cartItems}
+            renderItem={({item}) => (
+              <CartProductItem
+                item={item}
+                onIncrease={() => handleIncrease(item.id, item.quantity)}
+                onDecrease={() => handleDecrease(item.id, item.quantity)}
+                onRemove={() => handleRemove(item.id)}
+              />
+            )}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={styles.list}
+          />
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No AddtoCart items found</Text>
+          </View>
+        )}
       </View>
       <View style={styles.checkoutContainer}>
         <TouchableOpacity

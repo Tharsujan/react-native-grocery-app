@@ -46,22 +46,24 @@ const LoginScreen = ({navigation}) => {
       if (loginSuccess) {
         Toast.show({
           type: 'success',
-          text1: 'Login Successful!',
-          position: 'bottom',
+          text1: 'Login Successfully!',
+          visibilityTime: 3000,
+          position: 'center',
         });
 
         setTimeout(() => {
           //navigation.navigate('Home');
-        }, 2000);
+        }, 5000);
       }
     } catch (error) {
       console.error('Login Error:', error);
 
       Toast.show({
         type: 'error',
+        visibilityTime: 3000,
         text1: 'Login Failed',
-        text2: error.data?.message || 'An error occurred during login',
-        position: 'bottom',
+        text2: error?.data || 'An error occurred during login',
+        position: 'center',
       });
     }
   };

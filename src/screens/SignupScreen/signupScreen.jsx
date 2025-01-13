@@ -12,7 +12,6 @@ import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './signupScreenstyles';
 import {useRegisterMutation} from '../../seivices/api/authApi';
-// import {handleSignup} from '../../actions/register';
 
 const SignupScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
@@ -38,7 +37,8 @@ const SignupScreen = ({navigation}) => {
     if (!username || !email || !password) {
       Toast.show({
         type: 'error',
-        position: 'bottom',
+        visibilityTime: 3000,
+        position: 'center',
         text1: 'All fields are required',
         text2: 'Please fill in all fields.',
       });
@@ -48,7 +48,8 @@ const SignupScreen = ({navigation}) => {
     if (!isEmailValid) {
       Toast.show({
         type: 'error',
-        position: 'bottom',
+        visibilityTime: 3000,
+        position: 'center',
         text1: 'Invalid email',
         text2: 'Please enter a valid email address.',
       });
@@ -64,20 +65,22 @@ const SignupScreen = ({navigation}) => {
 
       Toast.show({
         type: 'success',
-        position: 'bottom',
+        visibilityTime: 3000,
+        position: 'center',
         text1: 'Signup successful!',
         text2: 'You can now log in.',
       });
 
       navigation.navigate('LoginScreen');
     } catch (error) {
-      console.error('Error during signup:', error);
+      //console.error('Error during signup:', error);
 
       Toast.show({
         type: 'error',
-        position: 'bottom',
+        visibilityTime: 3000,
+        position: 'center',
         text1: 'Signup failed',
-        text2: error.data?.message || 'Please try again.',
+        text2: error?.data || 'Please try again.',
       });
     }
   };

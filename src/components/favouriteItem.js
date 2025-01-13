@@ -10,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useRemoveFromFavoritesMutation} from '../seivices/api/favoriteApi';
+import Toast from 'react-native-toast-message';
 const BASE_URL = 'http://192.168.1.27:7193';
 
 const FavoriteItem = ({item, onRemove, onShowModal}) => {
@@ -23,15 +24,29 @@ const FavoriteItem = ({item, onRemove, onShowModal}) => {
   const handleRemove = async () => {
     try {
       await removeFromFavorites(item.id).unwrap();
-      Alert.alert('Success', `${item.name} removed from favorites`);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: `${item.name} deleted to favoriteItems successfully`,
+        visibilityTime: 3000, // Duration in milliseconds
+        position: 'center', // Position of the toast
+      });
+      // Alert.alert('Success', `${item.name} removed from favorites`);
       if (onRemove) {
         onRemove(item.id);
       }
     } catch (error) {
-      Alert.alert(
-        'Error',
-        error.data?.message || 'Failed to remove from favorites',
-      );
+      Toast.show({
+        type: 'error',
+        text1: 'error',
+        text2: `Failed to remove from favorites`,
+        visibilityTime: 3000, // Duration in milliseconds
+        position: 'center', // Position of the toast
+      });
+      // Alert.alert(
+      //   'Error',
+      //   error.data?.message || '',
+      // );
     }
   };
 

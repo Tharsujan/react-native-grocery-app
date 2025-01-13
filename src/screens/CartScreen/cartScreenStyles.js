@@ -25,6 +25,16 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 20,
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#7C7C7C',
+    textAlign: 'center',
+  },
   checkoutContainer: {
     paddingHorizontal: 25,
     paddingVertical: 10,

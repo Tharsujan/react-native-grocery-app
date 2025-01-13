@@ -20,6 +20,7 @@ import {
   useUpdateProfilePictureMutation,
   useDeleteProfilePictureMutation,
 } from '../../seivices/api/authApi';
+import Toast from 'react-native-toast-message';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
@@ -63,6 +64,8 @@ const EditProfileScreen = () => {
   };
 
   const handleProfileUpdate = async () => {
+    let hasChanges = false;
+
     try {
       // Handle profile picture update if there's a selected image
       if (selectedImage) {
@@ -76,6 +79,7 @@ const EditProfileScreen = () => {
         try {
           await updateProfilePicture(formData).unwrap();
           setSelectedImage(null); // Clear the selected image after upload
+          hasChanges = true;
         } catch (error) {
           console.error('Failed to update profile picture:', error);
           Alert.alert('Error', 'Failed to update profile picture.');
@@ -88,38 +92,67 @@ const EditProfileScreen = () => {
 
       if (username !== profile.username) {
         updateData.username = username;
+        hasChanges = true;
       }
 
       if (showPasswordFields && oldPassword && newPassword) {
         updateData.oldPassword = oldPassword;
         updateData.newPassword = newPassword;
+        hasChanges = true;
       }
 
       // Only proceed with profile update if there are changes
       if (Object.keys(updateData).length > 0) {
         await updateProfile(updateData).unwrap();
+        hasChanges = true;
       }
 
-      // Show success message and navigate
-      Alert.alert('Success', 'Profile updated successfully', [
-        {
-          text: 'OK',
-          onPress: () => {
-            refetch(); // Refresh the profile data
+      if (hasChanges) {
+        Toast.show({
+          type: 'success', // Type of the toast
+          text1: 'Success', // Title of the toast
+          text2: 'Profile updated successfully', // Message
+          visibilityTime: 3000, // Duration in milliseconds
+          position: 'center', // Position of the toast
+          onHide: () => {
+            // Callback when the toast is dismissed
+            refetch(); // Refetch data
             navigation.navigate('BottomNavbar', {screen: 'AccountScreen'});
           },
-        },
-      ]);
-
-      // Reset password fields and hide them
-      if (showPasswordFields) {
-        setShowPasswordFields(false);
-        setOldPassword('');
-        setNewPassword('');
+        });
+        // Reset password fields and hide them
+        if (showPasswordFields) {
+          setShowPasswordFields(false);
+          setOldPassword('');
+          setNewPassword('');
+        }
+      } else {
+        Toast.show({
+          type: 'info',
+          text1: 'No Changes',
+          text2: 'No changes were made to update',
+          visibilityTime: 3000,
+          position: 'center',
+        });
       }
     } catch (error) {
-      console.error('Failed to update profile:', error);
-      Alert.alert('Error', error?.data?.message || 'Failed to update profile');
+      // Show success message and navigate
+
+      //console.error('Failed to update profile:', error);
+      const errorMessage =
+        error?.data || // API error message (directly from `data` property)
+        error?.response?.data?.data || // Nested error message if wrapped in `response`
+        error?.message || // Error object message (e.g., network errors)
+        'Failed to update profile'; // Default fallback message
+
+      // Show a toast message
+      Toast.show({
+        type: 'error', // "success", "info", or "error"
+        text1: 'Error',
+        text2: errorMessage, // The extracted error message
+        visibilityTime: 3000, // Toast duration in milliseconds
+        position: 'center', // "top", "bottom", or "center"
+      });
     }
   };
 

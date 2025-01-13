@@ -10,6 +10,7 @@ import {
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FavoriteItem from '../../components/favouriteItem';
@@ -83,11 +84,22 @@ const FavoriteScreen = () => {
         productId: selectedItem.id,
         quantity: quantity,
       }).unwrap();
-
-      Alert.alert('Success', 'Item added to cart successfully');
       setIsModalVisible(false);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: `${selectedItem.name} added to cart successfully`,
+        visibilityTime: 3000, // Duration in milliseconds
+        position: 'top', // Position of the toast
+      });
     } catch (error) {
-      Alert.alert('Error', 'Failed to add item to cart');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to add item to cart',
+        visibilityTime: 2000,
+        position: 'bottom',
+      });
     }
   };
 
